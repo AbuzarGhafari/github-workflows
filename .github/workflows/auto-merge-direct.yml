@@ -1,4 +1,4 @@
-name: Direct Merge Feature Branch into Main
+name: Direct Rebase Feature Branch onto Main
 
 on:
   push:
@@ -9,10 +9,10 @@ permissions:
   contents: write
 
 jobs:
-  merge:
+  rebase:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main branch
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
@@ -23,11 +23,22 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge feature branch into main
+      - name: Rebase feature branch onto main and push
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
-          echo "Merging branch $BRANCH into main..."
+          echo "Rebasing $BRANCH onto main..."
           git fetch origin $BRANCH
-          git merge --no-ff origin/$BRANCH -m "Auto-merge $BRANCH into main [skip ci]"
+
+          # Checkout the feature branch
+          git checkout -b $BRANCH origin/$BRANCH
+
+          # Rebase onto latest main
+          git rebase origin/main
+
+          # Move main to this rebased branch (fast-forward only)
+          git checkout main
+          git merge --ff-only $BRANCH
+
+          # Push updated main
           git push origin main
