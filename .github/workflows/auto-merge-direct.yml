@@ -1,0 +1,33 @@
+name: Direct Merge Feature Branch into Main
+
+on:
+  push:
+    branches:
+      - 'feature-*'
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge feature branch into main
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "Merging branch $BRANCH into main..."
+          git fetch origin $BRANCH
+          git merge --no-ff origin/$BRANCH -m "Auto-merge $BRANCH into main [skip ci]"
+          git push origin main
