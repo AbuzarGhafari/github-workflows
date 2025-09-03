@@ -3,7 +3,7 @@ name: Auto Merge Feature Branches
 on:
   push:
     branches:
-      - 'feature/*'   # triggers on any branch starting with feature/
+      - 'feature/*'
 
 jobs:
   merge:
@@ -14,6 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -26,4 +27,5 @@ jobs:
           echo "Merging $FEATURE_BRANCH into main"
           git fetch origin $FEATURE_BRANCH
           git merge origin/$FEATURE_BRANCH --no-edit || exit 1
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git push origin main
