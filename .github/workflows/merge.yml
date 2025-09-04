@@ -3,6 +3,7 @@ name: Auto Merge Feature Branches
 on:
   push:
     branches:
+      - 'feature-*'
       - 'feature/*'
 
 jobs:
