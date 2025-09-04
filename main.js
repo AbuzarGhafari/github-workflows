@@ -1,2 +1,1 @@
-console.log('main.js');
-console.log('feature-2');
+console.log('main feature-2');
